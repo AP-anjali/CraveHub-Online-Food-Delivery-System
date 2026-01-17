@@ -1,1 +1,2 @@
 for mailing => nodemailer
+for google authentication => firebase

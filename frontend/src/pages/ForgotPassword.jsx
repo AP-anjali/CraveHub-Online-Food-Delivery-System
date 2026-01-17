@@ -17,16 +17,19 @@ function ForgotPassword() {
   const [showPassword1, setShowPassword1] = useState(false);
   const [showPassword2, setShowPassword2] = useState(false);
 
+  const [err, setErr] = useState("");
+
   const handleSendOtp = async () => {
     try
     {
         const result = await axios.post(`${serverUrl}/api/auth/send-otp`, {email}, {withCredentials : true});
         console.log(result);
+        setErr("");
         setStep(2);
     }
     catch(error)
     {
-        console.log(error);
+        setErr(error?.response?.data?.message);
     }
   };  
 
@@ -39,7 +42,7 @@ function ForgotPassword() {
     }
     catch(error)
     {
-        console.log(error);
+        setErr(error?.response?.data?.message);
     }
   };  
 
@@ -52,12 +55,13 @@ function ForgotPassword() {
     try
     {
         const result = await axios.post(`${serverUrl}/api/auth/reset-password`, {email, newPassword}, {withCredentials : true});
+        setErr("");
         console.log(result);
         navigate("/signin");
     }
     catch(error)
     {
-        console.log(error);
+        setErr(error?.response?.data?.message);
     }
   };  
 
@@ -75,12 +79,16 @@ function ForgotPassword() {
                     {/* email input field */}
                     <div className='mb-6'>
                         <label htmlFor="email" className='block text-gray-700 font-medium mb-1'>Email</label>
-                        <input type="email" className='w-full border-[1px] border-gray-200 rounded-lg px-3 py-2 focus:outline-none' placeholder='Enter Registered Email' onChange={(e) => setEmail(e.target.value)} value={email} />
+                        <input type="email" className='w-full border-[1px] border-gray-200 rounded-lg px-3 py-2 focus:outline-none' placeholder='Enter Registered Email' onChange={(e) => setEmail(e.target.value)} value={email} required />
                     </div>
 
                     <button onClick={handleSendOtp} className={`w-full font-semibold py-2 rounded-lg transition duration-200 bg-[#ff4d2d] text-white hover:bg-[#e64323] cursor-pointer`}>
                         Send OTP
                     </button>
+
+                    {err &&
+                        <p className='text-red-500 text-center my-[10px]'>*{err}</p>
+                    }
                 </div>
             }
 
@@ -90,12 +98,16 @@ function ForgotPassword() {
                     {/* otp input field */}
                     <div className='mb-6'>
                         <label htmlFor="otp" className='block text-gray-700 font-medium mb-1'>OTP</label>
-                        <input type="number" className='w-full border-[1px] border-gray-200 rounded-lg px-3 py-2 focus:outline-none' placeholder='Enter received OTP' onChange={(e) => setOtp(e.target.value)} value={otp} />
+                        <input type="number" className='w-full border-[1px] border-gray-200 rounded-lg px-3 py-2 focus:outline-none' placeholder='Enter received OTP' onChange={(e) => setOtp(e.target.value)} value={otp} required />
                     </div>
 
                     <button onClick={handleVerifyOtp} className={`w-full font-semibold py-2 rounded-lg transition duration-200 bg-[#ff4d2d] text-white hover:bg-[#e64323] cursor-pointer`}>
                         Verify
                     </button>
+
+                    {err &&
+                        <p className='text-red-500 text-center my-[10px]'>*{err}</p>
+                    }
                 </div>
             }
 
@@ -106,7 +118,7 @@ function ForgotPassword() {
                     <div className='mb-6'>
                         <label htmlFor="password" className='block text-gray-700 font-medium mb-1'>New Password</label>
                         <div className='relative'>
-                            <input type={`${showPassword1 ? "text" : "password"}`} className='w-full border-[1px] border-gray-200 rounded-lg px-3 py-2 focus:outline-none' placeholder='Enter New Password' onChange={(e) => setNewPassword(e.target.value)} value={newPassword} />
+                            <input type={`${showPassword1 ? "text" : "password"}`} className='w-full border-[1px] border-gray-200 rounded-lg px-3 py-2 focus:outline-none' placeholder='Enter New Password' onChange={(e) => setNewPassword(e.target.value)} value={newPassword} required />
                             <button className='absolute right-3 cursor-pointer top-[14px] text-gray-500' onClick={() => setShowPassword1(prev=>!prev)}>
                                 {!showPassword1 ? <FaRegEye/> : <FaRegEyeSlash/>}
                             </button>
@@ -117,7 +129,7 @@ function ForgotPassword() {
                     <div className='mb-6'>
                         <label htmlFor="confirmPassword" className='block text-gray-700 font-medium mb-1'>Confirm Password</label>
                         <div className='relative'>
-                            <input type={`${showPassword2 ? "text" : "password"}`} className='w-full border-[1px] border-gray-200 rounded-lg px-3 py-2 focus:outline-none' placeholder='Confirm Password' onChange={(e) => setConfirmPassword(e.target.value)} value={confirmPassword} />
+                            <input type={`${showPassword2 ? "text" : "password"}`} className='w-full border-[1px] border-gray-200 rounded-lg px-3 py-2 focus:outline-none' placeholder='Confirm Password' onChange={(e) => setConfirmPassword(e.target.value)} value={confirmPassword} required />
                             <button className='absolute right-3 cursor-pointer top-[14px] text-gray-500' onClick={() => setShowPassword2(prev=>!prev)}>
                                 {!showPassword2 ? <FaRegEye/> : <FaRegEyeSlash/>}
                             </button>
@@ -127,6 +139,10 @@ function ForgotPassword() {
                     <button onClick={handleResetPassword} className={`w-full font-semibold py-2 rounded-lg transition duration-200 bg-[#ff4d2d] text-white hover:bg-[#e64323] cursor-pointer`}>
                         Reset Password
                     </button>
+
+                    {err &&
+                        <p className='text-red-500 text-center my-[10px]'>*{err}</p>
+                    }
                 </div>
             }
         </div>
