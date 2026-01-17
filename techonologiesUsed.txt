@@ -1,2 +1,4 @@
 for mailing => nodemailer
 for google authentication => firebase
+for icons => react icons
+for pre-loader => react spinners
