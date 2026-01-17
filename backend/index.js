@@ -3,7 +3,8 @@ import dotenv from 'dotenv';
 import connectDb from './config/db.js';
 dotenv.config();
 import cookieParser from "cookie-parser";
-import authRouter from "./routes/auth.js";
+import authRouter from "./routes/authRoutes.js";
+import userRouter from "./routes/userRoutes.js";
 import cors from "cors";
 
 const app = express();
@@ -17,6 +18,7 @@ app.use(express.json());
 app.use(cookieParser()); // to parse token in cookie
 
 app.use("/api/auth", authRouter);
+app.use("/api/user", userRouter);
 
 app.listen(port, () => {
     connectDb();
