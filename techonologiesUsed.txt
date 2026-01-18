@@ -3,3 +3,4 @@ for google authentication => firebase
 for icons => react icons
 for pre-loader => react 
 to access current location of user => navigator.geolocation API [js in-built] to get the latitude and longitude and "geoapify" to get the location info based on latitude and longitude
+multer and cloudinary => for image.. when we upload image of items.. it will be temporarily stored in public folder by multer middleware and then uploaded on cloudinary platform and cloudinary platform will provide us an url of that image which we can store in database..
