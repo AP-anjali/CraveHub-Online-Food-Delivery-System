@@ -5,6 +5,8 @@ dotenv.config();
 import cookieParser from "cookie-parser";
 import authRouter from "./routes/authRoutes.js";
 import userRouter from "./routes/userRoutes.js";
+import shopRouter from "./routes/shopRoutes.js";
+import itemRouter from "./routes/itemRoutes.js";
 import cors from "cors";
 
 const app = express();
@@ -19,6 +21,8 @@ app.use(cookieParser()); // to parse token in cookie
 
 app.use("/api/auth", authRouter);
 app.use("/api/user", userRouter);
+app.use("/api/shop", shopRouter);
+app.use("/api/item", itemRouter);
 
 app.listen(port, () => {
     connectDb();
