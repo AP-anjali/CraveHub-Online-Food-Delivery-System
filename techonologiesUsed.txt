@@ -1,4 +1,5 @@
 for mailing => nodemailer
 for google authentication => firebase
 for icons => react icons
-for pre-loader => react spinners
+for pre-loader => react 
+to access current location of user => navigator.geolocation API [js in-built] to get the latitude and longitude and "geoapify" to get the location info based on latitude and longitude
