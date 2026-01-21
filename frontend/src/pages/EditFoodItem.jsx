@@ -1,23 +1,25 @@
-import React, { useState } from 'react'
+import React, { useEffect, useState } from 'react'
 import { IoIosArrowRoundBack } from 'react-icons/io'
 import { useDispatch, useSelector } from 'react-redux';
-import { useNavigate } from 'react-router-dom'
+import { useNavigate, useParams } from 'react-router-dom'
 import { FaUtensils } from 'react-icons/fa';
 import axios from 'axios';
 import { serverUrl } from '../App';
 import { setMyShopData } from '../redux/ownerSlice';
 import { ClipLoader } from 'react-spinners';
 
-function AddFoodItem() {
+function EditFoodItem() {
   const navigate = useNavigate();
   const {myShopData} = useSelector(state => state.owner);
+  const {itemId} = useParams();
+  const [currentItem, setCurrentItem] = useState(null);
 
   const [name, setName] = useState("");
-  const [price, setPrice] = useState(0);
-  const [frontendImage, setFrontendImage] = useState(null);
+  const [price, setPrice] = useState("");
+  const [frontendImage, setFrontendImage] = useState("");
   const [backendImage, setBackendImage] = useState(null);
   const [category, setCategory] = useState("");
-  const [foodType, setFoodType] = useState("veg");
+  const [foodType, setFoodType] = useState("");
 
   const [loading, setLoading] = useState(false);
 
@@ -49,7 +51,7 @@ function AddFoodItem() {
         formData.append("image", backendImage);
       }
 
-      const result = await axios.post(`${serverUrl}/api/item/add-item`, formData, {withCredentials : true});
+      const result = await axios.post(`${serverUrl}/api/item/edit-item/${itemId}`, formData, {withCredentials : true});
 
       dispatch(setMyShopData(result.data));
       setLoading(false);
@@ -61,6 +63,31 @@ function AddFoodItem() {
       setLoading(false);
     }
   };
+
+  useEffect(() => {
+    const handleGetItemById = async () => {
+      try
+      {
+        const result = await axios.get(`${serverUrl}/api/item/get-item-by-id/${itemId}`, {withCredentials : true});
+
+        setCurrentItem(result.data);
+      }
+      catch(error)
+      { 
+        console.log(error);
+      }
+    }
+
+    handleGetItemById();
+  }, [itemId]);
+
+  useEffect(() => {
+    setName(currentItem?.name || "");
+    setPrice(currentItem?.price || 0);
+    setFrontendImage(currentItem?.image || "");
+    setCategory(currentItem?.category || "");
+    setFoodType(currentItem?.foodType || "veg");
+  }, [currentItem]);
 
   return (
     <div className='flex justify-center flex-col items-center p-6 bg-gradient-to-br from-orange-50 to-white relative min-h-screen'>
@@ -74,7 +101,7 @@ function AddFoodItem() {
             <FaUtensils className='text-[#ff4d2d] w-16 h-16' />
           </div>
           <div className='text-3xl font-extrabold text-gray-900'>
-            Add Food Item
+            Edit Food Item
           </div>
         </div>
 
@@ -131,4 +158,4 @@ function AddFoodItem() {
   )
 }
 
-export default AddFoodItem
+export default EditFoodItem
