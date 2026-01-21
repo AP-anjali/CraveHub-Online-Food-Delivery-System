@@ -2,7 +2,7 @@ import multer from 'multer';
 
 const storage = multer.diskStorage({
     destination : (req, file, cb) => {  // cb = callback
-        cd(null, "/public");
+        cb(null, "./public");
     },
 
     filename : (req, file, cb) => { // to change the file name
@@ -10,4 +10,4 @@ const storage = multer.diskStorage({
     },
 });
 
-export const upload = multer(storage);
+export const upload = multer({ storage });

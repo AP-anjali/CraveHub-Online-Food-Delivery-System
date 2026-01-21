@@ -23,13 +23,25 @@ export const createOrEditShop = async (req, res) => {
         }
         else
         {
-            shop = await Shop.findByIdAndUpdate(shop._id, {
-                name, city, state, address, image, owner : req.userId
-            }, {new : true});
-        }
-        
+            const updateData = {
+                name,
+                city,
+                state,
+                address
+            };
 
-        await shop.populate("owner");
+            if (image) {
+                updateData.image = image;
+            }
+
+            shop = await Shop.findByIdAndUpdate(
+                shop._id,
+                updateData,
+                { new: true }
+            );
+        }
+
+        await shop.populate("owner items");
 
         return res.status(201).json(shop);
     }

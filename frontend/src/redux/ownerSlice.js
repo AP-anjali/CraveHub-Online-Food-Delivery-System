@@ -5,7 +5,7 @@ import { createSlice } from "@reduxjs/toolkit";
 const ownerSlice = createSlice({
     name : "owner",
     initialState : {
-        myShopData : null,
+        myShopData : undefined,
     },
     reducers : {
         setMyShopData : (state, action) => {
