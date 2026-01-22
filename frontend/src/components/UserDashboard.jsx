@@ -4,6 +4,7 @@ import {categories} from "../category.js"
 import CategoryCard from './CategoryCard'
 import {FaCircleChevronLeft, FaCircleChevronRight} from "react-icons/fa6"
 import { useSelector } from 'react-redux'
+import FoodItemCard from './FoodItemCard.jsx'
 
 function UserDashboard() {
   const {currentCity, shopsInMyCity, foodItemsInMyCity} = useSelector(state => state.user);
@@ -129,7 +130,13 @@ function UserDashboard() {
         <div className='w-full max-w-6xl flex flex-col gap-5 items-start p-[10px]'>
           <h1 className='text-gray-800 text-2xl sm'>Suggested Food Items</h1>
           
-          
+          <div className='w-full h-auto flex flex-wrap gap-[20px] justify-center'>
+            {
+              foodItemsInMyCity?.map((item, index) => (
+                <FoodItemCard key={index} data={item} />
+              ))
+            }
+          </div>
         </div>
     </div>
   )
