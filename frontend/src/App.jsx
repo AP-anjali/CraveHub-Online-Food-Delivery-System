@@ -13,6 +13,8 @@ import useGetMyShop from './hooks/useGetMyShop';
 import CreateEditShop from './pages/CreateEditShop';
 import AddFoodItem from './pages/AddFoodItem';
 import EditFoodItem from './pages/EditFoodItem';
+import useGetShopsByCity from './hooks/useGetShopsByCity';
+import useGetFoodItemsByCity from './hooks/useGetFoodItemsByCity';
 
 export const serverUrl = "http://localhost:8000";
 
@@ -20,6 +22,8 @@ function App() {
   useGetCurrentUser();
   useGetCity();
   useGetMyShop();
+  useGetShopsByCity();
+  useGetFoodItemsByCity();
 
   const {userData} = useSelector(state => state.user);
 

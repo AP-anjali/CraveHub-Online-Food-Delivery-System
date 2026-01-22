@@ -135,3 +135,34 @@ export const deleteItem = async (req, res) => {
       
     }
 };
+
+export const getFoodItemsByCity = async (req, res) => {
+    try
+    {
+        const city = req.params.city;
+
+        if(!city)
+        {
+            return res.status(400).json({message : "city is required !"});
+        }
+
+        const shops = await Shop.find({
+            city : {$regex : new RegExp(`^${city}$`, "i")}
+        }).populate("items");
+        
+        if(!shops)
+        {
+            return res.status(400).json({message : "No shop found in current city !"});
+        }
+
+        const shopIds = shops.map((shop) => shop._id);
+
+        const items = await Item.find({shop : {$in : shopIds}});
+
+        return res.status(200).json(items);
+    }
+    catch(error)
+    {
+        return res.status(500).json({message : `get food item by city error : ${error}`});
+    }
+};
