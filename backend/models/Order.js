@@ -3,6 +3,7 @@ import mongoose from "mongoose";
 const shopOrderItemSchema = new mongoose.Schema({
     item : {type : mongoose.Schema.Types.ObjectId, ref : "Item"},
     price : Number,
+    name : String,
     quantity : Number
 }, {timestamps : true});
 
@@ -18,8 +19,7 @@ const orderScheme = new mongoose.Schema({
     paymentMethod : {type : String, enum : ['cod', 'online'], required : true},
     deliveryAddress : {text : String, latitude : Number, longitude : Number},
     totalAmount : {type : Number},
-    shopOrder : {shopOrderSchema},
-
+    shopOrders : [shopOrderSchema]
 }, {timestamps : true});
 
 const Order = mongoose.model("Order", orderScheme);
