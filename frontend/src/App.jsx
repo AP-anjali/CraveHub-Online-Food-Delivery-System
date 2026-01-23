@@ -39,7 +39,7 @@ function App() {
       <Route path="/add-food-item" element={userData ? <AddFoodItem /> : <Navigate to={"/signin"} />} />
       <Route path="/edit-food-item/:itemId" element={userData ? <EditFoodItem /> : <Navigate to={"/signin"} />} />
       <Route path="/cart" element={userData ? <CartPage /> : <Navigate to={"/signin"} />} />
-      <Route path="/checkOut" element={userData ? <CheckOut /> : <Navigate to={"/signin"} />} />
+      <Route path="/checkout" element={userData ? <CheckOut /> : <Navigate to={"/signin"} />} />
     </Routes>
   )
 }
