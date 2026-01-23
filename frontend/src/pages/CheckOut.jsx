@@ -100,6 +100,7 @@ function CheckOut() {
         }, {withCredentials : true});
 
         console.log(result.data);
+        navigate("/order-placed");
     }
     catch(error)
     {
