@@ -15,7 +15,6 @@ function useGetFoodItemsByCity() {
                 const result = await axios.get(`${serverUrl}/api/item/get-food-items-by-city/${currentCity}`, {withCredentials : true});
 
                 dispatch(setFoodItemsInMyCity(result.data));
-                console.log(result.data);
             }
             catch(error)
             {

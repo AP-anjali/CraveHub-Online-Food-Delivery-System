@@ -12,6 +12,7 @@ import {MdDeliveryDining} from 'react-icons/md'
 import { FaMobileScreenButton } from 'react-icons/fa6'
 import { FaCreditCard } from 'react-icons/fa'
 import { serverUrl } from '../App';
+import { addMyOrder } from '../redux/userSlice'
 
 function RecenterMap({location}) {
     if(location.lat && location.lon)
@@ -99,7 +100,7 @@ function CheckOut() {
             cartItems
         }, {withCredentials : true});
 
-        console.log(result.data);
+        dispatch(addMyOrder(result.data));
         navigate("/order-placed");
     }
     catch(error)
@@ -129,10 +130,10 @@ function CheckOut() {
 
                 <div className='flex gap-2 mb-3'>
                     <input type="text" placeholder='Search your location for delivery' value={addressInput} onChange={(e) => setAddressInput(e.target.value)}  className='flex-1 border border-gray-300 rounded-lg p-2 text-sm focus:outline-none focus:ring-2 focus:ring-[#ff4d2d]' />
-                    <button onClick={getLatLngByAddress} className='bg-[#ff4d2d] hover:bg-[#e64526] text-white px-3 py-2 rounded-lg flex items-center justify-center'>
+                    <button onClick={getLatLngByAddress} className='cursor-pointer bg-[#ff4d2d] hover:bg-[#e64526] text-white px-3 py-2 rounded-lg flex items-center justify-center'>
                         <IoSearchOutline size={17} />
                     </button>
-                    <button onClick={getCurrentLocation} className='bg-blue-500 hover:bg-blue-600 text-white px-3 py-2 rounded-lg flex items-center justify-center'>
+                    <button onClick={getCurrentLocation} className='cursor-pointer bg-blue-500 hover:bg-blue-600 text-white px-3 py-2 rounded-lg flex items-center justify-center'>
                         <TbCurrentLocation size={17} />
                     </button>
                 </div>
@@ -224,7 +225,7 @@ function CheckOut() {
                 </div>
             </section>
 
-            <button onClick={handlePlaceOrder} className='w-full bg-[#ff4d2d] hover:bg-[#e64526] text-white py-3 rounded-xl font-semibold'>
+            <button onClick={handlePlaceOrder} className='cursor-pointer w-full bg-[#ff4d2d] hover:bg-[#e64526] text-white py-3 rounded-xl font-semibold'>
                 {paymentMethod == "cod" ? "Place Order" : "Pay & Place Order"}
             </button>
         </div>

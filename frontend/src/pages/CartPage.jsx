@@ -13,7 +13,7 @@ function CartPage() {
     <div className='min-h-screen bg-[#fff9f6] flex justify-center p-6'>
         <div className="w-full max-w-[800px]">
             <div className='flex items-center gap-[20px] mb-6'>
-                <div className='z-[10]' onClick={() => navigate("/")}>
+                <div className='z-[10] cursor-pointer' onClick={() => navigate("/")}>
                     <IoIosArrowRoundBack size={35} className='text-[#ff4d2d]' />
                 </div>
                 <h1 className='text-2xl font-bold text-start'>Your Cart</h1>
