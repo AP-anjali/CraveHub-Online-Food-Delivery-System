@@ -20,6 +20,7 @@ function useGetCity() {
             const result = await axios.get(`https://api.geoapify.com/v1/geocode/reverse?lat=${latitude}&lon=${longitude}&format=json&apiKey=${GEOAPIFY_KEY}`);
 
             dispatch(setCurrentCity(result?.data?.results[0].city));
+            console.log("cito : ", result?.data?.results[0].city);
             dispatch(setCurrentState(result?.data?.results[0].state));
             dispatch(setCurrentAddress(result?.data?.results[0].address_line2 || result?.data?.results[0].address_line1));
             dispatch(setAddress(result?.data?.results[0].address_line2))

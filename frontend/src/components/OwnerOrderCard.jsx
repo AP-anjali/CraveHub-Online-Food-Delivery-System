@@ -1,5 +1,5 @@
 import axios from 'axios';
-import React from 'react'
+import React, { useState } from 'react'
 import {MdPhone} from "react-icons/md"
 import { serverUrl } from '../App';
 import { useDispatch } from 'react-redux';
@@ -8,12 +8,15 @@ import { updateOrderStatus } from '../redux/userSlice';
 function OwnerOrderCard({data}) {
 
   const dispatch = useDispatch();
+  const [availableBoys, setAvailableBoys] = useState([]);
 
   const handleUpdateStatus = async (orderId, shopId, status) => {
     try
     {
         const result = await axios.post(`${serverUrl}/api/order/update-status/${orderId}/${shopId}`, {status}, {withCredentials:true});
         dispatch(updateOrderStatus({orderId, shopId, status}));
+        setAvailableBoys(result.data.availableBoys);
+        console.log(result.data);
     }
     catch(error)
     {
@@ -50,16 +53,33 @@ function OwnerOrderCard({data}) {
 
         <div className="flex justify-between items-center mt-auto pt-3 border-t border-gray-400">
             <span className='text-sm'>
-                Status : <span className='font-semibold capitalize text-[#ff4d2d]'>{data.shopOrders.status == "ourForDelivery" ? "our For Delivery" : data.shopOrders.status}</span>
+                Status : <span className='font-semibold capitalize text-[#ff4d2d]'>{data.shopOrders.status == "outForDelivery" ? "our For Delivery" : data.shopOrders.status}</span>
             </span>
 
             <select onChange={(e) => handleUpdateStatus(data._id, data.shopOrders.shop._id, e.target.value)} className='rounded-md border px-3 py-1 text-sm focus:outline-none focus:ring-2 border-[#ff4d2d] text-[#ff4d2d]'>
                 <option value="" disabled selected>Change Status</option>
                 <option value="pending">Pending</option>
                 <option value="preparing">Preparing</option>
-                <option value="ourForDelivery">Our for Delivery</option>
+                <option value="outForDelivery">Our for Delivery</option>
             </select>
         </div>
+        
+        {
+            data.shopOrders.status == "outForDelivery" &&
+
+            <div className='mt-3 p-2 border rounded-lg text-sm bg-orange-50'>
+                <p>Available Delivery Boys : </p>
+                {
+                    availableBoys.length > 0 ? (
+                        availableBoys.map((b, index) => (
+                            <div className='text-gray-300'>{b.fullName} - {b.mobile}</div>
+                        ))
+                    ) : (
+                        <div>Waiting for delivery boy to accept !</div>
+                    )
+                }
+            </div>
+        }
 
         <div className='text-right font-bold text-gray-800 text-sm'>
             Total : ₹{data.shopOrders.subTotal}

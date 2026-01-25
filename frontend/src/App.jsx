@@ -20,12 +20,14 @@ import CheckOut from './pages/CheckOut';
 import OrderPlaced from './pages/OrderPlaced';
 import MyOrders from './pages/MyOrders';
 import useGetMyOrders from './hooks/useGetMyOrders';
+import useUpdateUserLocation from './hooks/useUpdateUserLocation';
 
 export const serverUrl = "http://localhost:8000";
 
 function App() {
-  useGetCurrentUser();
   useGetCity();
+  useGetCurrentUser();
+  useUpdateUserLocation();
   useGetMyShop();
   useGetShopsByCity();
   useGetFoodItemsByCity();
