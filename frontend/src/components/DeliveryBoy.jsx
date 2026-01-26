@@ -1,5 +1,6 @@
 import React, { useEffect, useState } from 'react'
 import Nav from './Nav'
+import DeliveryBoyTracking from './DeliveryBoyTracking'
 import { useSelector } from 'react-redux'
 import axios from 'axios';
 import { serverUrl } from '../App';
@@ -9,6 +10,7 @@ function DeliveryBoy() {
   const {userData} = useSelector(state => state.user);
   const [availableAssignments, setAvailableAssignments] = useState([]);
   const [currentOrder, setCurrentOrder] = useState();
+  const [showOtpBox, setShowOtpBox] = useState(false);
 
   const getAssignments = async () => {
     try
@@ -34,6 +36,10 @@ function DeliveryBoy() {
       console.log(error);
     }
   }; 
+
+  const handleSendOtp = (e) => {
+    setShowOtpBox(true);
+  };
 
   const getCurrentOrder = async (assignmentId) => {
     try
@@ -106,7 +112,25 @@ function DeliveryBoy() {
               <p className='text-xs text-gray-600'>{currentOrder.deliveryAddress.text}</p>
               <p className='text-xs text-gray-500'>{currentOrder.shopOrder.shopOrderItems.length} items | ₹{currentOrder.shopOrder.subTotal}</p>
             </div>
+
+            <DeliveryBoyTracking data={currentOrder} />
+
+            {
+              !showOtpBox ?
+              <button onClick={handleSendOtp} className='mt-4 w-full bg-green-500 text-white font-semibold py-2 px-4 rounded-xl shadow-md hover:bg-green-600 active:scale-95 transition-all duration-200'>
+                Mark As Delivered
+              </button>
+              :
+              <div className='mt-4 p-4 border rounded-xl bg-gray-50'>
+                <p className='text-sm font-semibold mb-2'>
+                  Enter OTP send to <span className='text-orange-500'>{currentOrder.user.fullName}</span>
+                </p>
+                <input type="text" placeholder='Enter OTP' className='w-full border px-3 py-2 rounded-lg mb-3 focus:outline-none focus:ring-2 focus:ring-orange-400' />
+                <button className='w-full bg-orange-500 text-white py-2 rounded-lg font-semibold hover:bg-orange-600 transition-all'>Submit OTP</button>
+              </div>
+            }
             
+
           </div>
         }
 
