@@ -72,7 +72,7 @@ function OwnerOrderCard({data}) {
                 {
                     availableBoys.length > 0 ? (
                         availableBoys.map((b, index) => (
-                            <div className='text-gray-300'>{b.fullName} - {b.mobile}</div>
+                            <div className='text-gray-900 font-semibold'>{b.fullName} - {b.mobile}</div>
                         ))
                     ) : (
                         <div>Waiting for delivery boy to accept !</div>

@@ -132,7 +132,7 @@ export const updateOrderStatus = async (req, res) => {
 
         let deliveryBoysPayload = [];
 
-        if(status == "outForDelivery" || !shopOrder.assignment)
+        if(status == "outForDelivery" && !shopOrder.assignment)
         {
             const {longitude, latitude} = order.deliveryAddress;
 
@@ -204,5 +204,57 @@ export const updateOrderStatus = async (req, res) => {
     catch(error)
     {
         return res.status(500).json({message : `update order status error : ${error}`});
+    }
+};
+
+export const getDeliveryBoyAssignment = async (req, res) => {
+    try
+    {
+        const deliveryBoyId = req.userId;
+
+        const assignments = await DeliveryAssignment.find({
+            broadcastedTo : deliveryBoyId,
+            status : "broadcasted"
+        })
+        .populate("order")
+        .populate("shop");
+
+        const formated = assignments.map(a => ({
+            assignmentId : a._id,
+            orderId : a.order._id,
+            shopName : a.shop.name,
+            deliveryAddress : a.order.deliveryAddress,
+            items : a.order.shopOrders.find(so => so._id.equals(a.shopOrderId)).shopOrderItems || [],
+            subTotal : a.order.shopOrders.find(so => so._id.equals(a.shopOrderId))?.subTotal,
+        }));
+
+        return res.status(200).json(formated);
+    }
+    catch(error)
+    {
+        return res.status(500).json({message : `get delivery boy assignment error : ${error}`});
+    }
+};
+
+const acceptOrder = async(req, res) => {
+    try
+    {
+        const {assignmentId} = req.params;
+
+        const assignment = await DeliveryAssignment.findById(assignmentId);
+
+        if(!assignment)
+        {
+            return res.status(400).json({message : "assignment not found !"});
+        }
+
+        if(assignment.status !== "broadcasted")
+        {
+            return res.status(400).json({message : "assignment is expired !"});
+        }
+    }
+    catch(error)
+    {
+
     }
 };
