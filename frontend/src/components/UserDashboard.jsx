@@ -5,6 +5,7 @@ import CategoryCard from './CategoryCard'
 import {FaCircleChevronLeft, FaCircleChevronRight} from "react-icons/fa6"
 import { useSelector } from 'react-redux'
 import FoodItemCard from './FoodItemCard.jsx'
+import { useNavigate } from 'react-router-dom'
 
 function UserDashboard() {
   const {currentCity, shopsInMyCity, foodItemsInMyCity} = useSelector(state => state.user);
@@ -17,7 +18,11 @@ function UserDashboard() {
   const [showRightShopButton, setShowRightShopButton] = useState(false);
   const [updatedItemsList, setUpdatedItemsList] = useState([]);
 
+  const navigate = useNavigate();
+
   const handleFilterByCategory = (category) => {
+    if (!foodItemsInMyCity) return;
+
     if(category == "All")
     {
       setUpdatedItemsList(foodItemsInMyCity);
@@ -30,7 +35,7 @@ function UserDashboard() {
   }; 
 
   useEffect(() => {
-    setUpdatedItemsList(foodItemsInMyCity);
+    setUpdatedItemsList(foodItemsInMyCity || []);
   }, [foodItemsInMyCity]);
 
   const updateButton = (ref, setLeftButton, setRightButton) => {
@@ -129,7 +134,7 @@ function UserDashboard() {
             <div className='w-full flex overflow-x-auto gap-4 pb-2' ref={shopScrollRef}>
               {
                 shopsInMyCity?.map((shop, index) => (
-                  <CategoryCard name={shop.name} image={shop.image} key={index} />
+                  <CategoryCard name={shop.name} image={shop.image} key={index} onClick={() => navigate(`/shop/${shop._id}`)} />
                 ))
               }
             </div>
@@ -149,7 +154,7 @@ function UserDashboard() {
           
           <div className='w-full h-auto flex flex-wrap gap-[20px] justify-center'>
             {
-              updatedItemsList.length > 0 ? (
+              updatedItemsList && updatedItemsList.length > 0 ? (
                 updatedItemsList.map((item, index) => (
                   <FoodItemCard key={index} data={item} />
                 ))
