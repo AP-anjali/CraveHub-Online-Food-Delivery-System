@@ -15,6 +15,23 @@ function UserDashboard() {
 
   const [showLeftShopButton, setShowLeftShopButton] = useState(false);
   const [showRightShopButton, setShowRightShopButton] = useState(false);
+  const [updatedItemsList, setUpdatedItemsList] = useState([]);
+
+  const handleFilterByCategory = (category) => {
+    if(category == "All")
+    {
+      setUpdatedItemsList(foodItemsInMyCity);
+    }
+    else
+    {
+      const filteredList = foodItemsInMyCity.filter(i => i.category.toLowerCase() === category.toLowerCase());
+      setUpdatedItemsList(filteredList);
+    }
+  }; 
+
+  useEffect(() => {
+    setUpdatedItemsList(foodItemsInMyCity);
+  }, [foodItemsInMyCity]);
 
   const updateButton = (ref, setLeftButton, setRightButton) => {
     const element = ref.current;
@@ -81,7 +98,7 @@ function UserDashboard() {
             <div className='w-full flex overflow-x-auto gap-4 pb-2' ref={cateScrollRef}>
               {
                 categories.map((cate, index) => (
-                  <CategoryCard name={cate.category} image={cate.image} key={index} />
+                  <CategoryCard name={cate.category} image={cate.image} key={index} onClick={() => handleFilterByCategory(cate.category)} />
                 ))
               }
             </div>
@@ -132,9 +149,13 @@ function UserDashboard() {
           
           <div className='w-full h-auto flex flex-wrap gap-[20px] justify-center'>
             {
-              foodItemsInMyCity?.map((item, index) => (
-                <FoodItemCard key={index} data={item} />
-              ))
+              updatedItemsList.length > 0 ? (
+                updatedItemsList.map((item, index) => (
+                  <FoodItemCard key={index} data={item} />
+                ))
+              ) : (
+                <p className="text-gray-500">No food items found for this category</p>
+              )
             }
           </div>
         </div>
