@@ -2,6 +2,7 @@ import Order from "../models/Order.js";
 import DeliveryAssignment from "../models/DeliveryAssignment.js";
 import User from "../models/User.js";
 import Shop from "../models/Shop.js"
+import { sendDeliveryOtpMail } from "../utils/mail.js";
 
 export const placeOrder = async (req, res) => {
     try
@@ -385,3 +386,68 @@ export const getOrderById = async (req, res) => {
     }
 };
 
+export const sendDeliveryOtp = async (req, res) => {
+    try
+    {
+        const {orderId, shopOrderId} = req.body;
+
+        const order = await Order.findById(orderId).populate("user");
+        const shopOrder = order.shopOrders.id(shopOrderId);
+
+        if(!order || !shopOrder)
+        {
+            return res.status(400).json({message : "invalid order/shopOrder id"});
+        }
+
+        const otp = Math.floor(1000 + Math.random() * 9000).toString();
+
+        shopOrder.deliveryOtp = otp;
+        shopOrder.otpExpires = Date.now() + 5 * 60 * 1000;
+        await order.save();
+
+        await sendDeliveryOtpMail(order.user, otp);
+
+        return res.status(200).json({message : `OTP sent successfuly to ${order?.user?.fullName} !`});
+    }
+    catch(error)
+    {
+        return res.status(500).json({message : `send delivery otp error : ${error}`});
+    }
+};
+
+export const verifyDeliveryOtp = async (req, res) => {
+    try
+    {
+        const {orderId, shopOrderId, otp} = req.body;
+
+        const order = await Order.findById(orderId).populate("user");
+        const shopOrder = order.shopOrders.id(shopOrderId);
+
+        if(!order || !shopOrder)
+        {
+            return res.status(400).json({message : "invalid order/shopOrder id"});
+        }
+
+        if(shopOrder.deliveryOtp !== otp || !shopOrder.otpExpires || shopOrder.otpExpires < Date.now())
+        {
+            return res.status(400).json({message : "invalid or expired OTP !"});
+        }
+
+        shopOrder.status = "delivered";
+        shopOrder.deliveredAt = Date.now();
+
+        await order.save();
+
+        await DeliveryAssignment.deleteOne({
+            shopOrderId : shopOrder._id,
+            order : order._id,
+            assignedTo : shopOrder.assignedDeliveryBoy
+        });
+
+        return res.status(200).json({message : "Order Delivered Successfuly !"})
+    }
+    catch(error)
+    {
+        return res.status(500).json({message : `verify delivery otp error : ${error}`});
+    }
+};
