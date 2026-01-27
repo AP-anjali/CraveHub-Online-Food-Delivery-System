@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import {FaLocationDot, FaPlus} from "react-icons/fa6";
 import {IoIosSearch} from "react-icons/io"
 import {FiShoppingCart} from "react-icons/fi"
@@ -6,7 +6,7 @@ import { useDispatch, useSelector } from 'react-redux';
 import {RxCross2} from 'react-icons/rx';
 import axios from 'axios';
 import {serverUrl} from '../App';
-import { setUserData } from '../redux/userSlice';
+import { setSearchItems, setUserData } from '../redux/userSlice';
 import {TbReceipt2} from "react-icons/tb"
 import { useNavigate } from 'react-router-dom';
 
@@ -18,6 +18,7 @@ function Nav() {
   const [showInfo, setShowInfo] = useState(false);
   const [showSearch, setShowSearch] = useState(false);
   const dispatch = useDispatch();
+  const [query, setQuery] = useState("");
 
   const navigate = useNavigate();
 
@@ -32,6 +33,29 @@ function Nav() {
         console.log(error);
     }
   };
+  
+  const handleSearchItems = async () => {
+    try
+    {
+      const result = await axios.get(`${serverUrl}/api/item/search-items?query=${query}&city=${currentCity}`, {withCredentials : true});
+      dispatch(setSearchItems(result.data));
+    }
+    catch(error)
+    {
+      console.log(error);
+    }
+  };
+
+  useEffect(() => {
+    if(query)
+    {
+        handleSearchItems();
+    }
+    else
+    {
+        dispatch(setSearchItems());
+    }
+  }, [query]);
 
   return (
     <div className='w-full h-[80px] flex items-center justify-between md:justify-center gap-[30px] px-[20px] fixed top-0 z-[9999] bg-[#fff9f6] overflow-visible'>
@@ -46,7 +70,7 @@ function Nav() {
 
                 <div className='w-[80%] flex items-center gap-[10px]'>
                     <IoIosSearch size={25} className='text-[#ff4d2d]' />
-                    <input type="text" placeholder='search delicious food...' className='px-[10px] text-gray-700 outline-0 w-full' />
+                    <input onChange={(e) => setQuery(e.target.value)} value={query} type="text" placeholder='search delicious food...' className='px-[10px] text-gray-700 outline-0 w-full' />
                 </div>
             </div>
         }
@@ -62,7 +86,7 @@ function Nav() {
 
                 <div className='w-[80%] flex items-center gap-[10px]'>
                     <IoIosSearch size={25} className='text-[#ff4d2d]' />
-                    <input type="text" placeholder='search delicious food...' className='px-[10px] text-gray-700 outline-0 w-full' />
+                    <input onChange={(e) => setQuery(e.target.value)} value={query} type="text" placeholder='search delicious food...' className='px-[10px] text-gray-700 outline-0 w-full' />
                 </div>
             </div>
         }

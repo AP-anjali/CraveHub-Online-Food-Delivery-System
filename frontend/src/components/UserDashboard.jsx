@@ -6,9 +6,11 @@ import {FaCircleChevronLeft, FaCircleChevronRight} from "react-icons/fa6"
 import { useSelector } from 'react-redux'
 import FoodItemCard from './FoodItemCard.jsx'
 import { useNavigate } from 'react-router-dom'
+import axios from 'axios'
+import { serverUrl } from '../App.jsx'
 
 function UserDashboard() {
-  const {currentCity, shopsInMyCity, foodItemsInMyCity} = useSelector(state => state.user);
+  const {currentCity, shopsInMyCity, foodItemsInMyCity, searchItems} = useSelector(state => state.user);
   const cateScrollRef = useRef();
   const shopScrollRef = useRef();
   const [showLeftCateButton, setShowLeftCateButton] = useState(false);
@@ -86,6 +88,23 @@ function UserDashboard() {
   return (
     <div className='w-full min-h-screen bg-[#fff9f6] flex flex-col gap-5 overflow-y-auto items-center'>
         <Nav />
+
+        {
+          (searchItems && searchItems.length > 0) &&
+          <div className='w-full max-w-6xl flex flex-col gap-5 items-start p-5 bg-white shadow-md rounded-2xl mt-4'>
+            <h1 className='text-gray-900 text-xl sm:text-2xl font-semibold border-b border-gray-200 pb-2'>
+              Search Results
+            </h1>
+
+            <div className='w-full h-auto flex flex-wrap gap-6 justify-center'>
+              {
+                searchItems.map((item) => (
+                  <FoodItemCard key={item._id} data={item} />
+                ))
+              }
+            </div>
+          </div>
+        }
 
         {/* categories */}
         <div className='w-full max-w-6xl flex flex-col gap-5 items-start p-[10px]'>
