@@ -32,7 +32,10 @@ const orderScheme = new mongoose.Schema({
     paymentMethod : {type : String, enum : ['cod', 'online'], required : true},
     deliveryAddress : {text : String, latitude : Number, longitude : Number},
     totalAmount : {type : Number},
-    shopOrders : [shopOrderSchema]
+    shopOrders : [shopOrderSchema],
+    payment : {type : Boolean, default : false},
+    razorpayOrderId : {type : String, default : ""},
+    razorpayPaymentId : {type : String, default : ""},
 }, {timestamps : true});
 
 const Order = mongoose.model("Order", orderScheme);

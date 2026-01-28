@@ -92,17 +92,56 @@ function CheckOut() {
                 latitude : location.lat,
                 longitude : location.lon
             },
-            totalAmount,
+            totalAmount : amountWithDeliveryFee,
             cartItems
         }, {withCredentials : true});
 
-        dispatch(addMyOrder(result.data));
-        navigate("/order-placed");
+        if(paymentMethod == "cod")
+        {
+            dispatch(addMyOrder(result.data));
+            navigate("/order-placed");
+        }
+        else
+        {
+            const orderId = result.data.orderId;
+            const razorpayOrder = result.data.razorpayOrder;
+            openRazorpayWindow(orderId, razorpayOrder);
+        }
     }
     catch(error)
     {
         console.log(error);
     }
+  };
+
+  const openRazorpayWindow = (orderId, razorpayOrder) => {
+    const options = {
+        key : import.meta.env.VITE_RAZORPAY_KEY_ID,
+        amount : razorpayOrder.amount,
+        currency : 'INR',
+        name : 'CraveHub',
+        description : 'Food Delivery Website',
+        order_id : razorpayOrder.id,
+        handler : async function (response) {
+            try
+            {
+                const result = await axios.post(`${serverUrl}/api/order/verify-online-payment`, {
+                    razorpay_payment_id : response.razorpay_payment_id,
+                    orderId
+                }, {withCredentials : true});
+
+                dispatch(addMyOrder(result.data));
+                navigate("/order-placed");
+            }
+            catch(error)
+            {
+                console.log(error);
+            }
+        }
+    };
+
+    const rzp = new window.Razorpay(options);
+    rzp.open();
   };
 
   useEffect(() => {
@@ -155,7 +194,7 @@ function CheckOut() {
                 <h2 className='text-lg font-semibold mb-3 text-gray-800'>Payment Method</h2>
 
                 <div className='grid grid-cols-1 sm:grid-cols-2 gap-4'>
-                    <div onClick={() => setPaymentMethod("cod")} className={`flex items-center gap-3 rounded-xl border p-4 text-left transition ${paymentMethod === "cod" ? "border-[#ff4d2d] bg-orange-50 shadow" : "border-gray-200 hover:border-gray-300"}`}>
+                    <div onClick={() => setPaymentMethod("cod")} className={`cursor-pointer flex items-center gap-3 rounded-xl border p-4 text-left transition ${paymentMethod === "cod" ? "border-[#ff4d2d] bg-orange-50 shadow" : "border-gray-200 hover:border-gray-300"}`}>
                         <span className='inline-flex h-10 w-10 items-center justify-center rounded-full bg-green-100'>
                             <MdDeliveryDining className="text-green-600 text-xl" />
                         </span>
@@ -165,7 +204,7 @@ function CheckOut() {
                         </div>
                     </div>
 
-                    <div onClick={() => setPaymentMethod("online")} className={`flex items-center gap-3 rounded-xl border p-4 text-left transition ${paymentMethod === "online" ? "border-[#ff4d2d] bg-orange-50 shadow" : "border-gray-200 hover:border-gray-300"}`}>
+                    <div onClick={() => setPaymentMethod("online")} className={`cursor-pointer flex items-center gap-3 rounded-xl border p-4 text-left transition ${paymentMethod === "online" ? "border-[#ff4d2d] bg-orange-50 shadow" : "border-gray-200 hover:border-gray-300"}`}>
                         <span className='inline-flex h-10 w-10 items-center justify-center rounded-full bg-purple-100'>
                             <FaMobileScreenButton className='text-purple-700 text-lg' />
                         </span>
