@@ -39,7 +39,7 @@ function UserOrderCard({data}) {
                     </p>
                 }
                 <p className='font-medium text-blue-600'>
-                    Order status : {data.shopOrders?.[0].status}
+                    Order status : {data.shopOrders?.[0].status == "outForDelivery" ? "Out For Delivery" : data.shopOrders?.[0].status}
                 </p>
             </div>
         </div>
@@ -63,7 +63,7 @@ function UserOrderCard({data}) {
 
                     <div className="flex justify-between items-center border-t pt-2">
                         <p className='font-semibold'>Subtotal : {shopOrder.subTotal}</p>
-                        <p className='text-sm font-medium text-blue-600'>Status : {shopOrder.status}</p>
+                        <p className='text-sm font-medium text-blue-600'>Status : {shopOrder.status == "outForDelivery" ? "Out For Delivery" : shopOrder.status}</p>
                     </div>
                 </div>
             ))

@@ -8,3 +8,5 @@ to access current location of user => navigator.geolocation API [js in-built] to
 
 multer and cloudinary => for image.. when we upload image of items.. it will be temporarily stored in public folder by multer middleware and then uploaded on cloudinary platform and cloudinary platform will provide us an url of that image which we can store in database..
 to show map => leaflet and for unsing with react react-leaflet is the specific package
+
+for real-time bidirectional communication => socket.io

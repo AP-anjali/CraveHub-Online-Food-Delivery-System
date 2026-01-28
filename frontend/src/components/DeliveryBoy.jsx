@@ -7,7 +7,7 @@ import { serverUrl } from '../App';
 
 function DeliveryBoy() {
 
-  const {userData} = useSelector(state => state.user);
+  const {userData, socket} = useSelector(state => state.user);
   const [availableAssignments, setAvailableAssignments] = useState([]);
   const [currentOrder, setCurrentOrder] = useState();
   const [showOtpBox, setShowOtpBox] = useState(false);
@@ -74,6 +74,19 @@ function DeliveryBoy() {
       console.log(error);
     }
   }; 
+
+  useEffect(() => {
+    socket?.on('newAssignment', (data) => {
+      if(data.sentTo == userData._id)
+      {
+        setAvailableAssignments(prev => [...prev, data]);
+      }
+    });
+
+    return () => {
+      socket?.off('newAssignment');
+    };
+  }, [socket]);
 
   useEffect(() => {
     getAssignments();

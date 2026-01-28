@@ -97,6 +97,31 @@ export const placeOrder = async (req, res) => {
 
         await newOrder.populate("shopOrders.shopOrderItems.item", "name image price");
         await newOrder.populate("shopOrders.shop", "name");
+        await newOrder.populate("shopOrders.owner", "fullName socketId");
+        await newOrder.populate("user", "fullName email mobile");
+
+        const io = req.app.get('io');
+
+        if(io)
+        {
+            newOrder.shopOrders.forEach(shopOrder => {
+                const ownerSocketId = shopOrder.owner.socketId;
+                if(ownerSocketId)
+                {
+                    io.to(ownerSocketId).emit('newOrder', {
+                        _id: newOrder._id,
+                        paymentMethod: newOrder.paymentMethod,
+                        user: newOrder.user,
+                        shopOrders: shopOrder,
+                        createdAt: newOrder.createdAt,
+                        deliveryAddress : newOrder.deliveryAddress,
+                        payment : newOrder.payment
+                    });
+
+
+                }
+            });
+        }
 
         return res.status(201).json(newOrder);
     }
@@ -131,6 +156,34 @@ export const verifyOnlinePayment = async (req, res) => {
         await order.populate("shopOrders.shopOrderItems.item", "name image price");
         await order.populate("shopOrders.shop", "name");
 
+        await order.populate("shopOrders.shopOrderItems.item", "name image price");
+        await order.populate("shopOrders.shop", "name");
+        await order.populate("shopOrders.owner", "fullName socketId");
+        await order.populate("user", "fullName email mobile");
+
+        const io = req.app.get('io');
+
+        if(io)
+        {
+            order.shopOrders.forEach(shopOrder => {
+                const ownerSocketId = shopOrder.owner.socketId;
+                if(ownerSocketId)
+                {
+                    io.to(ownerSocketId).emit('newOrder', {
+                        _id: order._id,
+                        paymentMethod: order.paymentMethod,
+                        user: order.user,
+                        shopOrders: shopOrder,
+                        createdAt: order.createdAt,
+                        deliveryAddress : order.deliveryAddress,
+                        payment : order.payment
+                    });
+
+
+                }
+            });
+        }
+
         return res.status(200).json(order);
     }
     catch(error)
@@ -146,7 +199,7 @@ export const getMyOrders = async (req, res) => {
 
         if(user.role == "user")
         {
-            const orders = await Order.find({user:req.userId}).sort({createdAt : -1}).populate("shopOrders.shop", "name").populate("shopOrders.owner", "name email mobile").populate("shopOrders.shopOrderItems.item", "name image price");
+            const orders = await Order.find({user:req.userId}).sort({createdAt : -1}).populate("shopOrders.shop", "name").populate("shopOrders.owner", "fullName email mobile").populate("shopOrders.shopOrderItems.item", "name image price");
             return res.status(200).json(orders);
         }
         else if(user.role == "owner")
@@ -252,6 +305,30 @@ export const updateOrderStatus = async (req, res) => {
                 latitude : user.location.coordinates?.[1],
                 mobile : user.mobile
             }));
+
+            await deliveryAssignment.populate('order');
+            await deliveryAssignment.populate('shop');
+
+            const io = req.app.get('io');
+
+            if(io)
+            {
+                availableDeliveryBoys.forEach(boy => {
+                    const boySocketId = boy.socketId;
+                    if(boySocketId)
+                    {
+                        io.to(boySocketId).emit('newAssignment', {
+                            sentTo : boy._id,
+                            assignmentId : deliveryAssignment._id,
+                            orderId : deliveryAssignment.order._id,
+                            shopName : deliveryAssignment.shop.name,
+                            deliveryAddress : deliveryAssignment.order.deliveryAddress,
+                            items : deliveryAssignment.order.shopOrders.find(so => so._id.equals(deliveryAssignment.shopOrderId)).shopOrderItems || [],
+                            subTotal : deliveryAssignment.order.shopOrders.find(so => so._id.equals(deliveryAssignment.shopOrderId))?.subTotal,
+                        });
+                    }
+                });
+            }
         }
 
         await order.save();
@@ -260,6 +337,24 @@ export const updateOrderStatus = async (req, res) => {
 
         await order.populate("shopOrders.shop", "name");
         await order.populate("shopOrders.assignedDeliveryBoy", "fullName email mobile");
+        await order.populate("user", "socketId");
+
+        const io = req.app.get('io');
+
+        if(io)
+        {
+            const userSocketId = order.user.socketId;
+
+            if(userSocketId)
+            {
+                io.to(userSocketId).emit('update-status', {
+                    orderId : order._id,
+                    shopId : updatedShopOrder.shop._id,
+                    status : updatedShopOrder.status,
+                    userId : order.user._id
+                });
+            }
+        }
 
         return res.status(200).json({
             shopOrder : updatedShopOrder,
